@@ -1,5 +1,5 @@
 package WWW::DDG;
-# ABSTRACT: Short alias for WWW::DuckDuckGo
+# ABSTRACT: Short alias for L<WWW::DuckDuckGo>
 
 use Moo;
 
