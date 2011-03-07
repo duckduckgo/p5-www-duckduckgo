@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+	- Added ability to set agent name
 
 0.003     2011-03-07 07:09:55 Europe/Berlin
 	- Fixed abstract of WWW::DDG

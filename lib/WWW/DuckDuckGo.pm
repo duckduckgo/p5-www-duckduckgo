@@ -25,14 +25,20 @@ has _zeroclickinfo_class => (
 );
 
 has _http_agent => (
-	is => 'rw',
+	is => 'ro',
 	lazy => 1,
 	default => sub {
 		my $self = shift;
 		my $ua = LWP::UserAgent->new;
-		$ua->agent(__PACKAGE__.'/'.$VERSION);
+		$ua->agent($self->_http_agent_description);
 		return $ua;
 	},
+);
+
+has _http_agent_description => (
+	is => 'ro',
+	lazy => 1,
+	default => sub { __PACKAGE__.'/'.$VERSION },
 );
 
 sub zci { shift->zeroclickinfo(@_) }
