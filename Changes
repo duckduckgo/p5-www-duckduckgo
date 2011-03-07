@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+	- Fixed typo in sample synopsis
 
 0.002     2011-03-07 04:09:09 Europe/Berlin
 	- Added tons of documentation

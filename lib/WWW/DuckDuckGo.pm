@@ -62,7 +62,7 @@ sub zeroclickinfo {
 
   use WWW::DuckDuckGo;
 
-  my $duck = WWW::DuckDuckGo;
+  my $duck = WWW::DuckDuckGo->new;
   
   # request the Zero Click Info, you can also use ..->zci('duck duck go')
   my $zeroclickinfo = $duck->zeroclickinfo('duck duck go');
