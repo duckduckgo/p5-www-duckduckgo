@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.002     2011-03-07 04:09:09 Europe/Berlin
 	- Added tons of documentation
 	- Added WWW::DDG short alias package
 
