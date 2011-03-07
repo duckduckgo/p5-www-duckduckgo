@@ -50,7 +50,7 @@ sub zeroclickinfo {
 		my $result = decode_json($res->content);
 		return $self->_zeroclickinfo_class->by($result);
 	} else {
-		die __PACKAGE__.': '.$res->status_line, "\n";
+		die __PACKAGE__.' HTTP request failed: '.$res->status_line, "\n";
 	}
 }
 
@@ -64,12 +64,25 @@ sub zeroclickinfo {
 
   my $duck = WWW::DuckDuckGo;
   
-  # request the Zero Click Info, you can also use ..->zci('getty')
-  my $zeroclickinfo = $duck->zeroclickinfo('getty');
+  # request the Zero Click Info, you can also use ..->zci('duck duck go')
+  my $zeroclickinfo = $duck->zeroclickinfo('duck duck go');
+
+  # request the Zero Click Info of "duck duck go more stuff"
+  my $other_zeroclickinfo = $duck->zeroclickinfo('duck duck go','more stuff');
 
 =head1 DESCRIPTION
 
-This distribution gives you an easy access to the DuckDuckGo Zero Click Info API. (Documentation on the TODO, or do you wanna help?)
+This distribution gives you an easy access to the DuckDuckGo Zero Click Info API.
+
+=head1 METHODS
+
+=method $obj->zeroclickinfo
+
+Arguments: @query_fields
+
+Return value: L<WWW::DuckDuckGo::ZeroClickInfo>
+
+Returns the L<WWW::DuckDuckGo::ZeroClickInfo> of the query specified by the parameters. If you give several parameters they will get joined with an empty space.
 
 =head1 SUPPORT
 
@@ -86,4 +99,4 @@ Issue Tracker
 
   http://github.com/Getty/p5-www-duckduckgo/issues
 
-=cut
+

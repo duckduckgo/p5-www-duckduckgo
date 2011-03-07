@@ -124,3 +124,109 @@ sub type_long {
 }
 
 1;
+
+=encoding utf8
+
+=head1 SYNOPSIS
+
+  use WWW::DuckDuckGo;
+
+  my $zci = WWW::DuckDuckGo->new->zci('duck duck go');
+  
+  print "Heading: ".$zci->heading if $zci->has_heading;
+  
+  print "The answer is: ".$zci->answer if $zci->has_answer;
+
+=head1 DESCRIPTION
+
+This package reflects the result of a zeroclickinfo API request.
+
+=head1 METHODS
+
+=method has_abstract
+
+=method abstract
+
+=method has_abstract_text
+
+=method abstract_text
+
+=method has_abstract_source
+
+=method abstract_source
+
+=method has_abstract_url
+
+=method abstract_url
+
+Gives back a URI::http
+
+=method has_image
+
+=method image
+
+Gives back a URI::http
+
+=method has_heading
+
+=method heading
+
+=method has_answer
+
+=method answer
+
+=method has_answer_type
+
+=method answer_type
+
+=method has_definition
+
+=method definition
+
+=method has_definition_source
+
+=method definition_source
+
+=method has_definition_url
+
+=method definition_url
+
+Gives back a URI::http
+
+=method has_related_topics
+
+=method related_topics
+
+Gives back an array reference of L<WWW::DuckDuckGo::Link> objects.
+
+=method has_results
+
+=method results
+
+Gives back an array reference of L<WWW::DuckDuckGo::Link> objects.
+
+=method has_type
+
+=method type
+
+=method type_long
+
+Gives back a longer version of the type.
+
+=head1 SUPPORT
+
+IRC
+
+  Join #duckduckgo on irc.freenode.net. Highlight Getty for fast reaction :).
+
+Repository
+
+  http://github.com/Getty/p5-www-duckduckgo
+  Pull request and additional contributors are welcome
+ 
+Issue Tracker
+
+  http://github.com/Getty/p5-www-duckduckgo/issues
+
+
+
