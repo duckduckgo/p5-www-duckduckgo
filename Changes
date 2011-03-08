@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.004     2011-03-09 00:32:40 Europe/Berlin
 	- Added ability to use https and forcesecure switch
 	  for deactivating the fallback of http
 	- Various changes and bugfixes
