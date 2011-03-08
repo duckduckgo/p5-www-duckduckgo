@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+	- Added ability to use https and forcesecure switch
+	  for deactivating the fallback of http
+	- Various changes and bugfixes
 	- Added ability to set agent name
 
 0.003     2011-03-07 07:09:55 Europe/Berlin

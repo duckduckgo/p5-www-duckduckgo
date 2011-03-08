@@ -7,15 +7,31 @@ use URI;
 
 sub by {
 	my ( $class, $result ) = @_;
-	my @related_topics;
-	for (@{$result->{RelatedTopics}}) {
-		push @related_topics, $class->_link_class->by($_) if %{$_};
+	my %params;
+	if ($result->{RelatedTopics}) {
+		$params{related_topics_sections} = {};
+		if ($result->{RelatedTopics}->[0]->{Topics}) {
+			for (@{$result->{RelatedTopics}}) {
+				die "go to irc.freenode.net #duckduckgo and kick yegg, and also tell him your searchterm" if $_->{Name} eq '_';
+				my @topics;
+				for (@{$_->{Topics}}) {
+					push @topics, $class->_link_class->by($_) if %{$_};
+				}
+				$params{related_topics_sections}->{$_->{Name}} = \@topics;
+			}
+		} else {
+			my @topics;
+			for (@{$result->{RelatedTopics}}) {
+				push @topics, $class->_link_class->by($_) if %{$_};
+			}
+			$params{related_topics_sections}->{_} = \@topics if @topics;
+		}
 	}
 	my @results;
 	for (@{$result->{Results}}) {
 		push @results, $class->_link_class->by($_) if %{$_};
 	}
-	my %params;
+	$params{results} = \@results if @results;
 	$params{abstract} = $result->{Abstract} if $result->{Abstract};
 	$params{abstract_text} = $result->{AbstractText} if $result->{AbstractText};
 	$params{abstract_source} = $result->{AbstractSource} if $result->{AbstractSource};
@@ -27,8 +43,6 @@ sub by {
 	$params{definition} = $result->{Definition} if $result->{Definition};
 	$params{definition_source} = $result->{DefinitionSource} if $result->{DefinitionSource};
 	$params{definition_url} = URI->new($result->{DefinitionURL}) if $result->{DefinitionURL};
-	$params{related_topics} = \@related_topics if @related_topics;
-	$params{results} = \@results if @results;
 	$params{type} = $result->{Type} if $result->{Type};
 	__PACKAGE__->new(%params);
 }
@@ -90,10 +104,27 @@ has definition_url => (
 	predicate => 'has_definition_url',
 );
 
-has related_topics => (
+sub default_related_topics {
+	my ( $self ) = @_;
+	$self->related_topics_sections->{_} if $self->has_related_topics_sections;
+}
+
+sub has_default_related_topics {
+	my ( $self ) = @_;
+	$self->has_related_topics_sections && defined $self->related_topics_sections->{_} ? 1 : 0;
+}
+
+has related_topics_sections => (
 	is => 'ro',
-	predicate => 'has_related_topics',
+	predicate => 'has_related_topics_sections',
 );
+
+# DEPRECATED WARN
+sub related_topics {
+	warn __PACKAGE__.": usage of the function related_topics is deprecated, use default_related_topics for the same functionality (also see: related_topics_sections)";
+	shift->default_related_topics(@_);
+}
+################
 
 has results => (
 	is => 'ro',
@@ -136,6 +167,23 @@ sub type_long {
   print "Heading: ".$zci->heading if $zci->has_heading;
   
   print "The answer is: ".$zci->answer if $zci->has_answer;
+  
+  if ($zci->has_default_related_topics) {
+    for (@{$zci->default_related_topics}) {
+      print $_->url."\n";
+    }
+  }
+  
+  if (!$zci->has_default_related_topics and %{$zci->related_topics_sections}) {
+    print "Disambiguatious Related Topics:\n";
+    for (keys %{$zci->related_topics_sections}) {
+      print "  Related Topics Groupname: ".$_."\n";
+        for (@{$zci->related_topics_sections->{$_}}) {
+          print "  - ".$_->first_url->as_string."\n" if $_->has_first_url;
+        }
+      }
+    }
+  }
 
 =head1 DESCRIPTION
 
@@ -193,17 +241,21 @@ Gives back a URI::http
 
 Gives back a URI::http
 
-=method has_related_topics
+=method has_related_topics_sections
 
-=method related_topics
+=method related_topics_sections
 
-Gives back an array reference of L<WWW::DuckDuckGo::Link> objects.
+Gives back a hash reference of related topics with its Name as key and as value an array reference of L<WWW::DuckDuckGo::Link> objects. If there is a specific topic, a so called default topic, which is the case in all non disambigious search results, then this topic has the name "_", but you can access it with the method I<default_related_topics> directly.
+
+=method default_related_topics
+
+Gives back an array reference of L<WWW::DuckDuckGo::Link> objects. Can be undef, check with I<has_default_related_topics>.
 
 =method has_results
 
 =method results
 
-Gives back an array reference of L<WWW::DuckDuckGo::Link> objects.
+Gives back an array reference of L<WWW::DuckDuckGo::Link> objects. Can be undef, check with I<has_results>.
 
 =method has_type
 
