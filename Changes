@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.005     2011-03-09 03:55:17 Europe/Berlin
 	- Bugfix about handling of empty icon
 
 0.004     2011-03-09 00:32:40 Europe/Berlin
