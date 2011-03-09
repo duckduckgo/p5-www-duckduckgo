@@ -15,21 +15,21 @@ sub by {
 				die "go to irc.freenode.net #duckduckgo and kick yegg, and also tell him your searchterm" if $_->{Name} eq '_';
 				my @topics;
 				for (@{$_->{Topics}}) {
-					push @topics, $class->_link_class->by($_) if %{$_};
+					push @topics, $class->_link_class->by($_) if ref $_ eq 'HASH' and %{$_};
 				}
 				$params{related_topics_sections}->{$_->{Name}} = \@topics;
 			}
 		} else {
 			my @topics;
 			for (@{$result->{RelatedTopics}}) {
-				push @topics, $class->_link_class->by($_) if %{$_};
+				push @topics, $class->_link_class->by($_) if ref $_ eq 'HASH' and %{$_};
 			}
 			$params{related_topics_sections}->{_} = \@topics if @topics;
 		}
 	}
 	my @results;
 	for (@{$result->{Results}}) {
-		push @results, $class->_link_class->by($_) if %{$_};
+		push @results, $class->_link_class->by($_) if ref $_ eq 'HASH' and %{$_};
 	}
 	$params{results} = \@results if @results;
 	$params{abstract} = $result->{Abstract} if $result->{Abstract};
@@ -106,12 +106,12 @@ has definition_url => (
 
 sub default_related_topics {
 	my ( $self ) = @_;
-	$self->related_topics_sections->{_} if $self->has_related_topics_sections;
+	defined $self->related_topics_sections->{_} if $self->has_related_topics_sections;
 }
 
 sub has_default_related_topics {
 	my ( $self ) = @_;
-	$self->has_related_topics_sections && defined $self->related_topics_sections->{_} ? 1 : 0;
+	$self->has_related_topics_sections and defined $self->related_topics_sections->{_} ? 1 : 0;
 }
 
 has related_topics_sections => (
