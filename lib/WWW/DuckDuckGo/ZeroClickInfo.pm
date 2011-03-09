@@ -106,7 +106,7 @@ has definition_url => (
 
 sub default_related_topics {
 	my ( $self ) = @_;
-	defined $self->related_topics_sections->{_} if $self->has_related_topics_sections;
+	$self->related_topics_sections->{_} if $self->has_related_topics_sections;
 }
 
 sub has_default_related_topics {
