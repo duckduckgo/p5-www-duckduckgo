@@ -10,7 +10,7 @@ sub by {
 	my %params;
 	$params{result} = $link_result->{Result} if $link_result->{Result};
 	$params{first_url} = URI->new($link_result->{FirstURL}) if $link_result->{FirstURL};
-	$params{icon} = $class->_icon_class->by($link_result->{Icon}) if $link_result->{Icon};
+	$params{icon} = $class->_icon_class->by($link_result->{Icon}) if ref $link_result->{Icon} eq 'HASH' and %{$link_result->{Icon}};
 	$params{text} = $link_result->{Text} if $link_result->{Text};
 	__PACKAGE__->new(%params);
 }
