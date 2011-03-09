@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.006     2011-03-09 04:00:52 Europe/Berlin
 	- I am stupid
 
 0.005     2011-03-09 03:55:17 Europe/Berlin
