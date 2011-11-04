@@ -52,6 +52,11 @@ has forcesecure => (
 	default => sub { 0 },
 );
 
+has safeoff => (
+	is => 'ro',
+	default => sub { 0 },
+);
+
 sub zci { shift->zeroclickinfo(@_) }
 
 sub zeroclickinfo {
@@ -63,6 +68,7 @@ sub zeroclickinfo {
 		my $uri = URI->new($self->_duckduckgo_api_url_secure);
 		$uri->query_param( q => $query );
 		$uri->query_param( o => 'json' );
+		$uri->query_param( kp => -1 ) if $self->safeoff;
 		my $req = HTTP::Request->new(GET => $uri->as_string);
 		$res = $self->_http_agent->request($req);
 	};
@@ -112,6 +118,10 @@ Set to true will force the client to use https, so it will not fallback to http 
 =attr http_agent_name
 
 Set the http agent name which the webserver gets. Defaults to WWW::DuckDuckGo
+
+=attr safeoff
+
+Set to true to disable safesearch.
 
 =head1 METHODS
 
