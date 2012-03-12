@@ -64,7 +64,8 @@ BEGIN {
 			}
 		],
 		'Answer' => '',
-		'AbstractURL' => 'http://en.wikipedia.org/wiki/Duck_Duck_Go'
+		'AbstractURL' => 'http://en.wikipedia.org/wiki/Duck_Duck_Go',
+		'HTML' => '<a href="test">test</a>',
 	});
 
 	isa_ok($zci, 'WWW::DuckDuckGo::ZeroClickInfo');
@@ -88,6 +89,8 @@ BEGIN {
 	is($zci->has_definition_url ? 1 : 0, 0, 'Checking for non-existance of definition url');
 	is($zci->has_answer ? 1 : 0, 0, 'Checking for non-existance of answer');
 	is($zci->has_abstract_url ? 1 : 0, 1, 'Checking for existance of abstract url');
+	is($zci->html, '<a href="test">test</a>', 'Checking for correct html');
+	is($zci->has_html ? 1 : 0, 1, 'Checking for non-existance of html');
 
 }
 

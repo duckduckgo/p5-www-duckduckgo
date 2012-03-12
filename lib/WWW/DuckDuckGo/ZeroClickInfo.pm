@@ -44,6 +44,7 @@ sub by {
 	$params{definition_source} = $result->{DefinitionSource} if $result->{DefinitionSource};
 	$params{definition_url} = URI->new($result->{DefinitionURL}) if $result->{DefinitionURL};
 	$params{type} = $result->{Type} if $result->{Type};
+	$params{html} = $result->{HTML} if $result->{HTML};
 	__PACKAGE__->new(%params);
 }
 
@@ -102,6 +103,11 @@ has definition_source => (
 has definition_url => (
 	is => 'ro',
 	predicate => 'has_definition_url',
+);
+
+has html => (
+	is => 'ro',
+	predicate => 'has_html',
 );
 
 sub default_related_topics {
@@ -238,6 +244,10 @@ Gives back a URI::http
 =method has_definition_url
 
 =method definition_url
+
+=method has_html
+
+=method html
 
 Gives back a URI::http
 
