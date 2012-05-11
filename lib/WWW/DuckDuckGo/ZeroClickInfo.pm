@@ -45,6 +45,7 @@ sub by {
 	$params{definition_url} = URI->new($result->{DefinitionURL}) if $result->{DefinitionURL};
 	$params{type} = $result->{Type} if $result->{Type};
 	$params{html} = $result->{HTML} if $result->{HTML};
+    $params{redirect} = $result->{Redirect} if $result->{Redirect};
 	__PACKAGE__->new(%params);
 }
 
@@ -108,6 +109,11 @@ has definition_url => (
 has html => (
 	is => 'ro',
 	predicate => 'has_html',
+);
+
+has redirect => (
+	is => 'ro',
+	predicate => 'has_redirect',
 );
 
 sub default_related_topics {
