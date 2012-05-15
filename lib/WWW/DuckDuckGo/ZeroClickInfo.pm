@@ -281,6 +281,12 @@ Gives back an array reference of L<WWW::DuckDuckGo::Link> objects. Can be undef,
 
 Gives back a longer version of the type.
 
+=method has_redirect
+
+=method redirect
+
+Access the URL it would redirect you to (for !bangs)
+
 =head1 SUPPORT
 
 IRC
