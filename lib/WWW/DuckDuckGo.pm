@@ -59,37 +59,53 @@ has safeoff => (
 
 sub zci { shift->zeroclickinfo(@_) }
 
+sub _zeroclickinfo_request_base {
+	my ( $self, $for_uri, @query_fields ) = @_;
+	my $query = join(' ',@query_fields);
+	my $uri = URI->new($for_uri);
+	$uri->query_param( q => $query );
+	$uri->query_param( o => 'json' );
+	$uri->query_param( kp => -1 ) if $self->safeoff;
+    $uri->query_param( no_redirect => 1 );
+	return HTTP::Request->new(GET => $uri->as_string);
+}
+
+sub zeroclickinfo_request_secure {
+	my ( $self, @query_fields ) = @_;
+	return if !@query_fields;
+	return $self->_zeroclickinfo_request_base($self->_duckduckgo_api_url_secure,@query_fields);
+}
+
+sub zeroclickinfo_request {
+	my ( $self, @query_fields ) = @_;
+	return if !@query_fields;
+	return $self->_zeroclickinfo_request_base($self->_duckduckgo_api_url,@query_fields);
+}
+
 sub zeroclickinfo {
 	my ( $self, @query_fields ) = @_;
 	return if !@query_fields;
 	my $query = join(' ',@query_fields);
 	my $res;
 	eval {
-		my $uri = URI->new($self->_duckduckgo_api_url_secure);
-		$uri->query_param( q => $query );
-		$uri->query_param( o => 'json' );
-		$uri->query_param( kp => -1 ) if $self->safeoff;
-        $uri->query_param( no_redirect => 1 );
-		my $req = HTTP::Request->new(GET => $uri->as_string);
-		$res = $self->_http_agent->request($req);
+		$res = $self->_http_agent->request($self->zeroclickinfo_request_secure(@query_fields));
 	};
 	if (!$self->forcesecure and ( $@ or !$res or !$res->is_success ) ) {
 		warn __PACKAGE__." HTTP request failed: ".$res->status_line if ($res and !$res->is_success);
 		warn __PACKAGE__." Can't access ".$self->_duckduckgo_api_url_secure." falling back to: ".$self->_duckduckgo_api_url;
-		my $uri = URI->new($self->_duckduckgo_api_url);
-		$uri->query_param( q => $query );
-		$uri->query_param( o => 'json' );
-		$uri->query_param( kp => -1 ) if $self->safeoff;
-        $uri->query_param( no_redirect => 1 );
-		my $req = HTTP::Request->new(GET => $uri->as_string);
-		$res = $self->_http_agent->request($req);	
+		$res = $self->_http_agent->request($self->zeroclickinfo_request(@query_fields));
 	}
-	if ($res->is_success) {
-		my $result = decode_json($res->content);
+	return $self->zeroclickinfo_by_response($res);
+}
+
+sub zeroclickinfo_by_response {
+	my ( $self, $response ) = @_;
+	if ($response->is_success) {
+		my $result = decode_json($response->content);
 		return $self->_zeroclickinfo_class->by($result);
 	} else {
-		die __PACKAGE__.' HTTP request failed: '.$res->status_line, "\n";
-	}
+		die __PACKAGE__.' HTTP request failed: '.$response->status_line, "\n";
+	}	
 }
 
 1;
