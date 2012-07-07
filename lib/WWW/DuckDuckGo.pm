@@ -57,6 +57,11 @@ has safeoff => (
 	default => sub { 0 },
 );
 
+has html => (
+	is => 'ro',
+	default => sub { 0 },
+);
+
 sub zci { shift->zeroclickinfo(@_) }
 
 sub _zeroclickinfo_request_base {
@@ -67,6 +72,9 @@ sub _zeroclickinfo_request_base {
 	$uri->query_param( o => 'json' );
 	$uri->query_param( kp => -1 ) if $self->safeoff;
     $uri->query_param( no_redirect => 1 );
+    $self->html ? 
+        $uri->query_param( no_html => 0 ) : 
+        $uri->query_param( no_html => 1 );
 	return HTTP::Request->new(GET => $uri->as_string);
 }
 
@@ -141,6 +149,10 @@ Set the http agent name which the webserver gets. Defaults to WWW::DuckDuckGo
 =attr safeoff
 
 Set to true to disable safesearch.
+
+=attr html
+
+Allow HTML in output. This is the default in DuckDuckGo, but not default here to maintain backwards compatibility.
 
 =head1 METHODS
 
