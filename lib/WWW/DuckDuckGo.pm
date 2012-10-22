@@ -62,12 +62,19 @@ has html => (
 	default => sub { 0 },
 );
 
+# HashRef of extra params
+has params => (
+    is => 'ro',
+    default => sub { {} },
+);
+
 sub zci { shift->zeroclickinfo(@_) }
 
 sub _zeroclickinfo_request_base {
 	my ( $self, $for_uri, @query_fields ) = @_;
 	my $query = join(' ',@query_fields);
 	my $uri = URI->new($for_uri);
+    my %params = %{$self->params};
 	$uri->query_param( q => $query );
 	$uri->query_param( o => 'json' );
 	$uri->query_param( kp => -1 ) if $self->safeoff;
@@ -75,6 +82,7 @@ sub _zeroclickinfo_request_base {
     $self->html ? 
         $uri->query_param( no_html => 0 ) : 
         $uri->query_param( no_html => 1 );
+    $uri->query_param($_ => $params{$_}) for keys %params;
 	return HTTP::Request->new(GET => $uri->as_string);
 }
 
@@ -153,6 +161,10 @@ Set to true to disable safesearch.
 =attr html
 
 Allow HTML in output. This is the default in DuckDuckGo, but not default here to maintain backwards compatibility.
+
+=attr params
+
+A HashRef of extra GET params to pass with the query (documented on https://api.duckduckgo.com/)
 
 =head1 METHODS
 
