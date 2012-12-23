@@ -62,6 +62,12 @@ has html => (
 	default => sub { 0 },
 );
 
+has client_type => (
+	is => 'ro',
+	default => sub {},
+	predicate => 'has_client_type'
+);
+
 # HashRef of extra params
 has params => (
     is => 'ro',
@@ -78,9 +84,10 @@ sub _zeroclickinfo_request_base {
 	$uri->query_param( q => $query );
 	$uri->query_param( o => 'json' );
 	$uri->query_param( kp => -1 ) if $self->safeoff;
+	$uri->query_param( t => $self->client_type ) if $self->has_client_type;
     $uri->query_param( no_redirect => 1 );
-    $self->html ? 
-        $uri->query_param( no_html => 0 ) : 
+    $self->html ?
+        $uri->query_param( no_html => 0 ) :
         $uri->query_param( no_html => 1 );
     $uri->query_param($_ => $params{$_}) for keys %params;
 	return HTTP::Request->new(GET => $uri->as_string);
@@ -102,26 +109,30 @@ sub zeroclickinfo {
 	my ( $self, @query_fields ) = @_;
 	return if !@query_fields;
 	my $query = join(' ',@query_fields);
-	my $res;
-	eval {
-		$res = $self->_http_agent->request($self->zeroclickinfo_request_secure(@query_fields));
-	};
-	if (!$self->forcesecure and ( $@ or !$res or !$res->is_success ) ) {
-		warn __PACKAGE__." HTTP request failed: ".$res->status_line if ($res and !$res->is_success);
-		warn __PACKAGE__." Can't access ".$self->_duckduckgo_api_url_secure." falling back to: ".$self->_duckduckgo_api_url;
-		$res = $self->_http_agent->request($self->zeroclickinfo_request(@query_fields));
-	}
-	return $self->zeroclickinfo_by_response($res);
+	my $json = $self->request($self->_http_agent, $self->forcesecure,
+				 sub { $self->zeroclickinfo_request_secure(@query_fields); },
+				 sub { $self->zeroclickinfo_request(@query_fields); });
+	return $self->_zeroclickinfo_class->by($json);
 }
 
-sub zeroclickinfo_by_response {
-	my ( $self, $response ) = @_;
-	if ($response->is_success) {
-		my $result = decode_json($response->content);
-		return $self->_zeroclickinfo_class->by($result);
+sub request {
+	my ( $class, $http_agent, $forcesecure, $secure_request_builder, $request_builder ) = @_;
+	my $res;
+	my $secure_request = &$secure_request_builder;
+	eval {
+		$res = $http_agent->request($secure_request);
+	};
+	if (!$forcesecure and ( $@ or !$res or !$res->is_success ) ) {
+		my $request = &$request_builder;
+		warn __PACKAGE__." HTTP request failed: ".$res->status_line if ($res and !$res->is_success);
+		warn __PACKAGE__." Can't access ".$secure_request." falling back to: ".$request;
+		$res = $http_agent->request($request);
+	}
+	if ($res->is_success) {
+		return decode_json($res->content);
 	} else {
-		die __PACKAGE__.' HTTP request failed: '.$response->status_line, "\n";
-	}	
+		die __PACKAGE__.' HTTP request failed: '.$res->status_line, "\n";
+	}
 }
 
 1;
@@ -133,7 +144,7 @@ sub zeroclickinfo_by_response {
   use WWW::DuckDuckGo;
 
   my $duck = WWW::DuckDuckGo->new;
-  
+
   # request the Zero Click Info, you can also use ..->zci('duck duck go')
   my $zeroclickinfo = $duck->zeroclickinfo('duck duck go');
 
@@ -186,9 +197,7 @@ Repository
 
   http://github.com/Getty/p5-www-duckduckgo
   Pull request and additional contributors are welcome
- 
+
 Issue Tracker
 
   http://github.com/Getty/p5-www-duckduckgo/issues
-
-
