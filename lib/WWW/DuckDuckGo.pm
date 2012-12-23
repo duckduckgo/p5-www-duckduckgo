@@ -68,44 +68,34 @@ has params => (
     default => sub { {} },
 );
 
-has _uri_builder => (
-	is => 'ro',
-	default => sub { '_zeroclickinfo_uri' }
-);
-
 sub zci { shift->zeroclickinfo(@_) }
 
-sub _zeroclickinfo_uri {
+sub _zeroclickinfo_request_base {
 	my ( $self, $for_uri, @query_fields ) = @_;
 	my $query = join(' ',@query_fields);
 	my $uri = URI->new($for_uri);
-	my %params = %{$self->params};
+    my %params = %{$self->params};
 	$uri->query_param( q => $query );
 	$uri->query_param( o => 'json' );
 	$uri->query_param( kp => -1 ) if $self->safeoff;
-	$uri->query_param( no_redirect => 1 );
-	$uri->query_param( no_html => $self->html ? 0 : 1 );
-	$uri->query_param($_ => $params{$_}) for keys %params;
-	return $uri;
-}
-
-sub _request_base {
-	my $self = shift;
-	my $uri_builder = $self->_uri_builder;
-	my $uri = $self->$uri_builder(@_);
+    $uri->query_param( no_redirect => 1 );
+    $self->html ? 
+        $uri->query_param( no_html => 0 ) : 
+        $uri->query_param( no_html => 1 );
+    $uri->query_param($_ => $params{$_}) for keys %params;
 	return HTTP::Request->new(GET => $uri->as_string);
 }
 
 sub zeroclickinfo_request_secure {
 	my ( $self, @query_fields ) = @_;
 	return if !@query_fields;
-	return $self->_request_base($self->_duckduckgo_api_url_secure,@query_fields);
+	return $self->_zeroclickinfo_request_base($self->_duckduckgo_api_url_secure,@query_fields);
 }
 
 sub zeroclickinfo_request {
 	my ( $self, @query_fields ) = @_;
 	return if !@query_fields;
-	return $self->_request_base($self->_duckduckgo_api_url,@query_fields);
+	return $self->_zeroclickinfo_request_base($self->_duckduckgo_api_url,@query_fields);
 }
 
 sub zeroclickinfo {
@@ -131,7 +121,7 @@ sub zeroclickinfo_by_response {
 		return $self->_zeroclickinfo_class->by($result);
 	} else {
 		die __PACKAGE__.' HTTP request failed: '.$response->status_line, "\n";
-	}
+	}	
 }
 
 1;
@@ -143,7 +133,7 @@ sub zeroclickinfo_by_response {
   use WWW::DuckDuckGo;
 
   my $duck = WWW::DuckDuckGo->new;
-
+  
   # request the Zero Click Info, you can also use ..->zci('duck duck go')
   my $zeroclickinfo = $duck->zeroclickinfo('duck duck go');
 
@@ -196,7 +186,9 @@ Repository
 
   http://github.com/Getty/p5-www-duckduckgo
   Pull request and additional contributors are welcome
-
+ 
 Issue Tracker
 
   http://github.com/Getty/p5-www-duckduckgo/issues
+
+
