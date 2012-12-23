@@ -5,7 +5,7 @@ use Moo;
 use WWW::DuckDuckGo::Link;
 use URI;
 
-sub by {
+sub _build_params {
 	my ( $class, $result ) = @_;
 	my %params;
 	if ($result->{RelatedTopics}) {
@@ -45,7 +45,13 @@ sub by {
 	$params{definition_url} = URI->new($result->{DefinitionURL}) if $result->{DefinitionURL};
 	$params{type} = $result->{Type} if $result->{Type};
 	$params{html} = $result->{HTML} if $result->{HTML};
-    $params{redirect} = $result->{Redirect} if $result->{Redirect};
+	$params{redirect} = $result->{Redirect} if $result->{Redirect};
+	return %params;
+}
+
+sub by {
+	my ( $class, $result ) = @_;
+	my %params = $class->_build_params($result);
 	__PACKAGE__->new(%params);
 }
 
@@ -175,17 +181,17 @@ sub type_long {
   use WWW::DuckDuckGo;
 
   my $zci = WWW::DuckDuckGo->new->zci('duck duck go');
-  
+
   print "Heading: ".$zci->heading if $zci->has_heading;
-  
+
   print "The answer is: ".$zci->answer if $zci->has_answer;
-  
+
   if ($zci->has_default_related_topics) {
     for (@{$zci->default_related_topics}) {
       print $_->url."\n";
     }
   }
-  
+
   if (!$zci->has_default_related_topics and %{$zci->related_topics_sections}) {
     print "Disambiguatious Related Topics:\n";
     for (keys %{$zci->related_topics_sections}) {
@@ -297,10 +303,7 @@ Repository
 
   http://github.com/Getty/p5-www-duckduckgo
   Pull request and additional contributors are welcome
- 
+
 Issue Tracker
 
   http://github.com/Getty/p5-www-duckduckgo/issues
-
-
-
