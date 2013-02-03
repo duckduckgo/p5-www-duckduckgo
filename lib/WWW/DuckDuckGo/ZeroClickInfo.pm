@@ -31,6 +31,7 @@ sub by {
 	for (@{$result->{Results}}) {
 		push @results, $class->_link_class->by($_) if ref $_ eq 'HASH' and %{$_};
 	}
+        $params{_json} = $result;
 	$params{results} = \@results if @results;
 	$params{abstract} = $result->{Abstract} if $result->{Abstract};
 	$params{abstract_text} = $result->{AbstractText} if $result->{AbstractText};
@@ -50,6 +51,10 @@ sub by {
 }
 
 sub _link_class { 'WWW::DuckDuckGo::Link' }
+
+has _json => (
+	is => 'ro',
+);
 
 has abstract => (
 	is => 'ro',
