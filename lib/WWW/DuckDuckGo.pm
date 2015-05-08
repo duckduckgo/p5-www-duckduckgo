@@ -180,15 +180,15 @@ Returns the L<WWW::DuckDuckGo::ZeroClickInfo> of the query specified by the para
 
 IRC
 
-  Join #duckduckgo on irc.freenode.net. Highlight Getty for fast reaction :).
+  Join #duckduckgo on irc.freenode.net.
 
 Repository
 
-  http://github.com/Getty/p5-www-duckduckgo
+  http://github.com/duckduckgo/p5-www-duckduckgo
   Pull request and additional contributors are welcome
  
 Issue Tracker
 
-  http://github.com/Getty/p5-www-duckduckgo/issues
+  http://github.com/duckduckgo/p5-www-duckduckgo/issues
 
 
