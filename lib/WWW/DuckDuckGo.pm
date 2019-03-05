@@ -152,7 +152,7 @@ Set to true will force the client to use https, so it will not fallback to http 
 
 =attr http_agent_name
 
-Set the http agent name which the webserver gets. Defaults to WWW::DuckDuckGo
+Set the http agent name which the web server gets. Defaults to WWW::DuckDuckGo
 
 =attr safeoff
 
